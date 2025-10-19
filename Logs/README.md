@@ -189,32 +189,32 @@ scrape_configs
 
 ### Defines what logs to read and label
 
-Example:
+### Example:
 
-__path__: /var/log/python-app/*.log
+* __path__: /var/log/python-app/*.log
 job: python-app
 host: ${HOSTNAME}
 
 
-Promtail reads all .log files in /var/log/python-app/, adds labels, and sends them to Loki
+* Promtail reads all .log files in /var/log/python-app/, adds labels, and sends them to Loki
 
-Systemd Service for Promtail
+* Systemd Service for Promtail
 [Unit]
 Description=Promtail service
 After=network.target
 
-[Service]
+* [Service]
 ExecStart=/usr/local/bin/promtail --config.file=/etc/promtail/config.yaml
 Restart=always
 User=root
 
-[Install]
+* [Install]
 WantedBy=multi-user.target
 
 
-Promtail runs as root (needed to read system logs)
+* Promtail runs as root (needed to read system logs)
 
-Auto-restarts on failure
+* Auto-restarts on failure
 
 ### How Loki + Promtail Work Together ####
 ### Work Flow
