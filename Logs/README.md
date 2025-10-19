@@ -67,7 +67,7 @@ limits_config:
   reject_old_samples: true
   reject_old_samples_max_age: 168h
 
-### Explanation of key sections:###
+### Explanation of key sections:
 
 auth_enabled: false
 
@@ -89,7 +89,7 @@ max_chunk_age: 1h → force flush chunk after 1 hour.
 
 schema_config
 
-Defines how logs are stored and indexed.
+### Defines how logs are stored and indexed:
 
 from: 2025-09-23 → schema applies to logs on/after this date.
 
@@ -167,7 +167,7 @@ scrape_configs:
           host: ${HOSTNAME}
           __path__: /var/log/python-app/*.log
 
-Explanation of key sections
+### Explanation of key sections
 
 server
 
@@ -187,7 +187,7 @@ Promtail pushes logs to Loki here
 
 scrape_configs
 
-Defines what logs to read and label
+### Defines what logs to read and label
 
 Example:
 
