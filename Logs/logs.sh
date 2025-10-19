@@ -176,3 +176,13 @@ sudo systemctl daemon-reload
 sudo systemctl enable promtail
 sudo systemctl start promtail
 sudo systemctl status promtail --no-pager
+
+########################################
+# ✅ COMPLETION MESSAGE
+########################################
+echo "=================================================="
+echo "✅ Installation complete!"
+echo "Grafana running on: http://<your-server-ip>:3000"
+echo "Loki listening on: http://localhost:3100"
+echo "Promtail sending logs to Loki"
+echo "=================================================="

@@ -134,19 +134,18 @@ Restarts automatically if it fails
 Runs as the loki user for security
 
 ### Installing Promtail ###
-Installation Steps
+* Installation Steps
 wget https://github.com/grafana/loki/releases/latest/download/promtail-linux-amd64.zip
 unzip -o promtail-linux-amd64.zip
 sudo mv promtail-linux-amd64 /usr/local/bin/promtail
-sudo chmod +x /usr/local/bin/promtail
+* sudo chmod +x /usr/local/bin/promtail
 sudo mkdir -p /etc/promtail
 
+* Downloads Promtail binary, makes it executable, and moves it to /usr/local/bin.
 
-Downloads Promtail binary, makes it executable, and moves it to /usr/local/bin.
+* Creates /etc/promtail for config files.
 
-Creates /etc/promtail for config files.
-
-Promtail Configuration (/etc/promtail/config.yaml)
+* Promtail Configuration (/etc/promtail/config.yaml)
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
