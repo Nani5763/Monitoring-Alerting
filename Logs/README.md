@@ -229,4 +229,4 @@ Loki ingester receives logs → buffers in memory → writes chunks to disk
 
 Metadata (labels → chunk mapping) stored in BoltDB index
 
-Grafana queries Loki → fetches logs from chunks using index
+ * Grafana queries Loki → fetches logs from chunks using index
