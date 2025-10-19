@@ -217,16 +217,16 @@ Promtail runs as root (needed to read system logs)
 Auto-restarts on failure
 
 ### How Loki + Promtail Work Together ####
-Flow
+### Work Flow
 
-Promtail watches log files on your system (/var/log/...)
+* Promtail watches log files on your system (/var/log/...)
 
-Adds labels to each log line (job, host, etc.)
+* Adds labels to each log line (job, host, etc.)
 
-Pushes logs to Loki’s HTTP API (localhost:3100)
+* Pushes logs to Loki’s HTTP API (localhost:3100)
 
-Loki ingester receives logs → buffers in memory → writes chunks to disk
+* Loki ingester receives logs → buffers in memory → writes chunks to disk
 
-Metadata (labels → chunk mapping) stored in BoltDB index
+* Metadata (labels → chunk mapping) stored in BoltDB index
 
- * Grafana queries Loki → fetches logs from chunks using index
+* Grafana queries Loki → fetches logs from chunks using index
