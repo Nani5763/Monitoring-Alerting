@@ -1,5 +1,6 @@
 ### Process ####
 
+**Steps:**
 Installing Loki
 Installation Steps
 wget https://github.com/grafana/loki/releases/latest/download/loki-linux-amd64.zip
@@ -8,7 +9,7 @@ sudo mv loki-linux-amd64 /usr/local/bin/loki
 sudo chmod +x /usr/local/bin/loki
 
 
-Downloads the Loki binary.
+**Downloads the Loki binary:**
 
 Makes it executable and moves it to /usr/local/bin so it can run anywhere.
 
@@ -17,7 +18,7 @@ sudo useradd --system --no-create-home --shell /bin/false loki || true
 sudo chown -R loki:loki /var/lib/loki
 
 
-Creates directories:
+**Creates directories:**
 
 /etc/loki → config file
 
@@ -66,7 +67,7 @@ limits_config:
   reject_old_samples: true
   reject_old_samples_max_age: 168h
 
-Explanation of key sections
+### Explanation of key sections:###
 
 auth_enabled: false
 
