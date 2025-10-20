@@ -115,8 +115,7 @@ positions:
   filename: /tmp/positions.yaml
 
 clients:
-  - url: http://172.31.16.156:3100/loki/api/v1/push     (Your current promtail config assumes Loki is running on localhost (same machine).
-Since Loki is actually on a different EC2 instance, you must update the Loki endpoint in your Promtail config..Replace localhost with the private IP or public IP of your Loki + Grafana EC2 instance)
+  - url: http://172.31.16.156:3100/loki/api/v1/push
 
 
 scrape_configs:
