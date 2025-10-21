@@ -9,6 +9,17 @@ sudo apt update && sudo apt upgrade -y
 sudo apt-get install -y software-properties-common unzip wget curl gnupg
 
 ########################################
+# 📊 INSTALL GRAFANA
+########################################
+echo "=== Installing Grafana ==="
+sudo add-apt-repository -y "deb https://packages.grafana.com/oss/deb stable main"
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+sudo apt update
+sudo apt install grafana -y
+sudo systemctl enable --now grafana-server
+sudo systemctl status grafana-server --no-pager
+
+########################################
 # ⏱ INSTALL TEMPO
 ########################################
 echo "=== Installing Tempo ==="
@@ -29,8 +40,10 @@ distributor:
   receivers:
     otlp:
       protocols:
-        grpc:
         http:
+          endpoint: 0.0.0.0:4318
+        grpc:
+          endpoint: 0.0.0.0:4317
 
 ingester:
   trace_idle_period: 10s
@@ -45,6 +58,7 @@ storage:
     backend: local
     local:
       path: /var/lib/tempo/traces
+
 EOF
 
 # Tempo service

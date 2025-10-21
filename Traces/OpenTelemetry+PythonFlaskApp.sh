@@ -61,7 +61,7 @@ trace.set_tracer_provider(TracerProvider())
 tracer = trace.get_tracer(__name__)
 
 exporter = OTLPSpanExporter(
-    endpoint="http://172.31.17.123:4318/v1/traces"  # OTLP endpoint of collector (Tempo or OTel Collector)
+    endpoint="http://172.31.17.55:4318/v1/traces"  # OTLP endpoint of collector (Tempo or OTel Collector)
 )
 span_processor = SimpleSpanProcessor(exporter)
 trace.get_tracer_provider().add_span_processor(span_processor)
