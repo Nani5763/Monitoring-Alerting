@@ -1,4 +1,4 @@
-### Process ####
+# Process
 
 # Installing Loki
 # Installation Steps
@@ -27,7 +27,7 @@
 
 # Creates a system user loki to run Loki securely.
 
-# Loki Configuration (/etc/loki-config.yaml)
+Loki Configuration (/etc/loki-config.yaml)
 auth_enabled: false
 
 server:
