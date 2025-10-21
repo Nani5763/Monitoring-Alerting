@@ -36,7 +36,6 @@ sudo chown -R loki:loki /var/lib/loki
 # Loki config
 cat <<EOF | sudo tee /etc/loki-config.yaml
 auth_enabled: false
-
 server:
   http_listen_port: 3100
 
@@ -93,97 +92,11 @@ sudo systemctl daemon-reload
 sudo systemctl enable loki
 sudo systemctl start loki
 sudo systemctl status loki --no-pager
-
-########################################
-# 📦 INSTALL PROMTAIL
-########################################
-echo "=== Installing Promtail ==="
-cd /tmp
-wget https://github.com/grafana/loki/releases/latest/download/promtail-linux-amd64.zip
-unzip -o promtail-linux-amd64.zip
-sudo mv promtail-linux-amd64 /usr/local/bin/promtail
-sudo chmod +x /usr/local/bin/promtail
-sudo mkdir -p /etc/promtail
-
-# Promtail config
-cat <<EOF | sudo tee /etc/promtail/config.yaml
-server:
-  http_listen_port: 9080
-  grpc_listen_port: 0
-
-positions:
-  filename: /tmp/positions.yaml
-
-clients:
-  - url: http://localhost:3100/loki/api/v1/push
-
-
-scrape_configs:
-  - job_name: systemd-journal
-    journal:
-      path: /var/log/journal
-      labels:
-        job: systemd
-        host: ${HOSTNAME}
-    relabel_configs:
-      - source_labels: ['__journal__systemd_unit']
-        target_label: 'unit'
-
-  - job_name: apache2
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: varlogs
-          host: ${HOSTNAME}
-          __path__: /var/log/apache2/access.log
-
-  - job_name: varerror
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: varerror
-          host: ${HOSTNAME}
-          __path__: /var/log/apache2/error.log
-          
-  - job_name: python-app
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: python-app
-          host: ${HOSTNAME}
-          __path__: /var/log/python-app/*.log
-
-EOF
-
-# Promtail service
-cat <<EOF | sudo tee /etc/systemd/system/promtail.service
-[Unit]
-Description=Promtail service
-After=network.target
-
-[Service]
-ExecStart=/usr/local/bin/promtail --config.file=/etc/promtail/config.yaml
-Restart=always
-User=root
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl enable promtail
-sudo systemctl start promtail
-sudo systemctl status promtail --no-pager
-
 ########################################
 # ✅ COMPLETION MESSAGE
 ########################################
 echo "=================================================="
-echo "✅ Installation complete!"
-echo "Grafana running on: http://<your-server-ip>:3000"
-echo "Loki listening on: http://localhost:3100"
-echo "Promtail sending logs to Loki"
+echo "✅ Installation complete on SERVER!"
+echo "Grafana: http://<your-server-ip>:3000"
+echo "Loki: http://localhost:3100"
 echo "=================================================="
