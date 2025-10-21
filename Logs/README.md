@@ -95,20 +95,7 @@
 
 # Disable structured metadata.
 
-Systemd Service for Loki
-[Unit]
-Description=Loki Log Aggregation System
-After=network.target
-
-[Service]
-ExecStart=/usr/local/bin/loki --config.file=/etc/loki-config.yaml
-Restart=always
-User=loki
-Group=loki
-WorkingDirectory=/var/lib/loki
-
-[Install]
-WantedBy=multi-user.target
+![alt text](image-4.png)
 
 
 * Runs Loki as a service (systemctl start loki)
@@ -127,28 +114,11 @@ WantedBy=multi-user.target
 
 * Downloads Promtail binary, makes it executable, and moves it to /usr/local/bin.
 
-* Creates /etc/promtail for config files.
+# Creates /etc/promtail for config files.
 
-# Promtail Configuration (/etc/promtail/config.yaml)
-server:
-  http_listen_port: 9080
-  grpc_listen_port: 0
+* Promtail Configuration (/etc/promtail/config.yaml)
 
-positions:
-  filename: /tmp/positions.yaml
-
-clients:
-  - url: http://localhost:3100/loki/api/v1/push
-
-scrape_configs:
-  - job_name: python-app
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: python-app
-          host: ${HOSTNAME}
-          __path__: /var/log/python-app/*.log
+![alt text](image-5.png)
 
 ### Explanation of key sections
 
@@ -174,25 +144,12 @@ scrape_configs:
 
 ### Example:
 
-* __path__: /var/log/python-app/*.log
-job: python-app
-host: ${HOSTNAME}
+![alt text](image-6.png)
 
 
 * Promtail reads all .log files in /var/log/python-app/, adds labels, and sends them to Loki
 
-* Systemd Service for Promtail
-[Unit]
-Description=Promtail service
-After=network.target
-
-* [Service]
-ExecStart=/usr/local/bin/promtail --config.file=/etc/promtail/config.yaml
-Restart=always
-User=root
-
-* [Install]
-WantedBy=multi-user.target
+![alt text](image-7.png)
 
 
 * Promtail runs as root (needed to read system logs)
