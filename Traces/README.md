@@ -56,7 +56,7 @@ Example:
 # Step 5: Validate End-to-End Flow
 * Visit your app multiple times by hitting the URL
 * Example like:
-    * http://<EC2-2-Public-IP>:5000/ 
+    * http://EC2-2-Public-IP:5000/ 
 
 # Port Number
 1. Grafana Port Number is --> 3000
