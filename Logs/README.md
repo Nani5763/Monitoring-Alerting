@@ -27,42 +27,7 @@
 
 # Creates a system user loki to run Loki securely.
 
-Loki Configuration (/etc/loki-config.yaml)
-auth_enabled: false
-
-server:
-  http_listen_port: 3100
-
-ingester:
-  lifecycler:
-    address: 127.0.0.1
-    ring:
-      kvstore:
-        store: inmemory
-      replication_factor: 1
-  chunk_idle_period: 5m
-  max_chunk_age: 1h
-
-schema_config:
-  configs:
-    - from: 2025-09-23
-      store: boltdb
-      object_store: filesystem
-      schema: v11
-      index:
-        prefix: index_
-        period: 24h
-
-storage_config:
-  boltdb:
-    directory: /var/lib/loki/index
-  filesystem:
-    directory: /var/lib/loki/chunks
-
-limits_config:
-  allow_structured_metadata: false
-  reject_old_samples: true
-  reject_old_samples_max_age: 168h
+![alt text](image-2.png) ![alt text](image-3.png)
 
 # Explanation of key sections:
 
