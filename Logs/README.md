@@ -63,7 +63,7 @@ limits_config:
   allow_structured_metadata: false
   reject_old_samples: true
   reject_old_samples_max_age: 168h
-
+```
 # Explanation of key sections:
 
 * auth_enabled: false
@@ -129,7 +129,7 @@ limits_config:
     * Reject old logs > 7 days (168h).
 
 # Disable structured metadata.
-
+```bash
 Systemd Service for Loki
 [Unit]
 Description=Loki Log Aggregation System
@@ -144,7 +144,7 @@ WorkingDirectory=/var/lib/loki
 
 [Install]
 WantedBy=multi-user.target
-
+```
 
 * Runs Loki as a service (systemctl start loki)
 
@@ -165,7 +165,7 @@ WantedBy=multi-user.target
 # Creates /etc/promtail for config files.
 
 * Promtail Configuration (/etc/promtail/config.yaml)
-
+```bash
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
@@ -185,7 +185,7 @@ scrape_configs:
           job: python-app
           host: ${HOSTNAME}
           __path__: /var/log/python-app/*.log
-
+```
 ### Explanation of key sections
 
 * server
@@ -209,14 +209,14 @@ scrape_configs:
 ### Defines what logs to read and label
 
 ### Example:
-
+```bash
 __path__: /var/log/python-app/*.log
 job: python-app
 host: ${HOSTNAME}
-
+```
 
 * Promtail reads all .log files in /var/log/python-app/, adds labels, and sends them to Loki
-
+```bash
 Systemd Service for Promtail
 [Unit]
 Description=Promtail service
@@ -229,7 +229,7 @@ User=root
 
 [Install]
 WantedBy=multi-user.target
-
+```
 
 * Promtail runs as root (needed to read system logs)
 
