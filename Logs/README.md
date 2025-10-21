@@ -1,36 +1,33 @@
 ### Process ####
 
-**Steps:**
-Installing Loki
-Installation Steps
-wget https://github.com/grafana/loki/releases/latest/download/loki-linux-amd64.zip
-unzip -o loki-linux-amd64.zip
-sudo mv loki-linux-amd64 /usr/local/bin/loki
-sudo chmod +x /usr/local/bin/loki
+# Installing Loki
+# Installation Steps
+* wget https://github.com/grafana/loki/releases/latest/download/loki-linux-amd64.zip
+* unzip -o loki-linux-amd64.zip
+* sudo mv loki-linux-amd64 /usr/local/bin/loki
+* sudo chmod +x /usr/local/bin/loki
 
+# Downloads the Loki binary:
 
-**Downloads the Loki binary:**
+* Makes it executable and moves it to /usr/local/bin so it can run anywhere.
 
-Makes it executable and moves it to /usr/local/bin so it can run anywhere.
+    * sudo mkdir -p /etc/loki /var/lib/loki/index /var/lib/loki/chunks /var/lib/loki/wal
+    * sudo useradd --system --no-create-home --shell /bin/false loki || true
+    * sudo chown -R loki:loki /var/lib/loki
 
-sudo mkdir -p /etc/loki /var/lib/loki/index /var/lib/loki/chunks /var/lib/loki/wal
-sudo useradd --system --no-create-home --shell /bin/false loki || true
-sudo chown -R loki:loki /var/lib/loki
+# Creates directories:
 
+* /etc/loki → config file
 
-**Creates directories:**
+* /var/lib/loki/index → BoltDB index files (metadata for logs)
 
-/etc/loki → config file
+* /var/lib/loki/chunks → actual log data
 
-/var/lib/loki/index → BoltDB index files (metadata for logs)
+* /var/lib/loki/wal → write-ahead logs for durability
 
-/var/lib/loki/chunks → actual log data
+# Creates a system user loki to run Loki securely.
 
-/var/lib/loki/wal → write-ahead logs for durability
-
-Creates a system user loki to run Loki securely.
-
-Loki Configuration (/etc/loki-config.yaml)
+# Loki Configuration (/etc/loki-config.yaml)
 auth_enabled: false
 
 server:
@@ -67,49 +64,71 @@ limits_config:
   reject_old_samples: true
   reject_old_samples_max_age: 168h
 
-### Explanation of key sections:
+# Explanation of key sections:
 
-auth_enabled: false
+* auth_enabled: false
 
-Disables authentication (any client can push/query logs).
+    * Disables authentication (any client can push/query logs).
 
-server
+* server
 
-http_listen_port: 3100 → Loki listens for HTTP requests (from Promtail or Grafana).
+    * http_listen_port: 3100 → Loki listens for HTTP requests (from Promtail or Grafana).
+    * Loki runs a small web server on port 3100 where logs can be received and queried.
 
-ingester
+* ingester
 
-Buffers logs in memory before writing to chunks.
+    *Handles incoming logs — keeps them in memory for a while and then saves them to disk.
 
-lifecycler + ring → manages log stream ownership (important for clustering).
+* chunk_idle_period: 5m 
 
-chunk_idle_period: 5m → close chunk if idle 5 minutes.
+    * If no new logs for 5 minutes, Loki saves that chunk to disk.
 
-max_chunk_age: 1h → force flush chunk after 1 hour.
+* max_chunk_age: 1h
 
-schema_config
+    * Logs are saved every 1 hour, even if still active.
+
+* schema_config
+
+    * Tells Loki how to organize and index log data for fast searching.
+
+* store: boltdb
+
+    * Uses a small local database (BoltDB) to store indexes
+
+* object_store: filesystem
+
+    * Saves the actual log files on your system’s disk.
+
+* storage_config:
+
+    * Defines where Loki will store the logs and index files.
+
+* limits_config:
+
+    * Sets rules to reject very old logs (older than 7 days).
+
 
 ### Defines how logs are stored and indexed:
 
-from: 2025-09-23 → schema applies to logs on/after this date.
+* from: 2025-09-23 → schema applies to logs on/after this date.
 
-store: boltdb → metadata stored in BoltDB.
+* store: boltdb → metadata stored in BoltDB.
 
-object_store: filesystem → actual logs stored as files.
+* object_store: filesystem → actual logs stored as files.
 
-index.period: 24h → create a new index file every day.
+* index.period: 24h → create a new index file every day.
 
-storage_config
+* storage_config
 
-BoltDB → /var/lib/loki/index (index/metadata)
+    * BoltDB → /var/lib/loki/index (index/metadata)
 
-Filesystem → /var/lib/loki/chunks (actual logs)
+    * Filesystem → /var/lib/loki/chunks (actual logs)
 
-limits_config
+* limits_config
 
-Reject old logs > 7 days (168h).
+    * Reject old logs > 7 days (168h).
 
-Disable structured metadata.
+# Disable structured metadata.
 
 Systemd Service for Loki
 [Unit]
@@ -127,25 +146,25 @@ WorkingDirectory=/var/lib/loki
 WantedBy=multi-user.target
 
 
-Runs Loki as a service (systemctl start loki)
+* Runs Loki as a service (systemctl start loki)
 
-Restarts automatically if it fails
+* Restarts automatically if it fails
 
-Runs as the loki user for security
+* Runs as the loki user for security
 
 ### Installing Promtail ###
-* Installation Steps
-wget https://github.com/grafana/loki/releases/latest/download/promtail-linux-amd64.zip
-unzip -o promtail-linux-amd64.zip
-sudo mv promtail-linux-amd64 /usr/local/bin/promtail
+# Installation Steps
+* wget https://github.com/grafana/loki/releases/latest/download/promtail-linux-amd64.zip
+* unzip -o promtail-linux-amd64.zip
+* sudo mv promtail-linux-amd64 /usr/local/bin/promtail
 * sudo chmod +x /usr/local/bin/promtail
-sudo mkdir -p /etc/promtail
+* sudo mkdir -p /etc/promtail
 
 * Downloads Promtail binary, makes it executable, and moves it to /usr/local/bin.
 
 * Creates /etc/promtail for config files.
 
-* Promtail Configuration (/etc/promtail/config.yaml)
+# Promtail Configuration (/etc/promtail/config.yaml)
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
@@ -168,23 +187,23 @@ scrape_configs:
 
 ### Explanation of key sections
 
-server
+* server
 
-Port 9080 → Promtail’s HTTP server (status/metrics)
+    * Port 9080 → Promtail’s HTTP server (status/metrics)
 
-positions
+* positions
 
-/tmp/positions.yaml → tracks last read line in each log file
+    * /tmp/positions.yaml → tracks last read line in each log file
 
-Ensures Promtail doesn’t resend old logs
+    * Ensures Promtail doesn’t resend old logs
 
-clients
+* clients
 
-Loki endpoint: http://localhost:3100/loki/api/v1/push
+    * Loki endpoint: http://localhost:3100/loki/api/v1/push
 
-Promtail pushes logs to Loki here
+    * Promtail pushes logs to Loki here
 
-scrape_configs
+* scrape_configs
 
 ### Defines what logs to read and label
 
@@ -229,3 +248,16 @@ WantedBy=multi-user.target
 * Metadata (labels → chunk mapping) stored in BoltDB index
 
 * Grafana queries Loki → fetches logs from chunks using index
+
+# Update Promtail Configuration (/etc/promtail/config.yaml)
+
+* Find this section in your config:
+![alt text](image.png)
+* ➡️ Replace localhost with the private IP or public IP of your Loki + Grafana EC2 instance.
+* For example:
+![alt text](image-1.png)
+
+# Port Number
+1. Grafana Port Number is --> 3000
+2. Promtail Port Number is --> 9080
+3. Grafana Loki Port Number is --> 3100
