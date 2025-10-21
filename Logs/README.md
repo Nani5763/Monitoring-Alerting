@@ -1,13 +1,13 @@
 # Process
 
 # Installing Loki
-# Installation Steps
+### Installation Steps
 * wget https://github.com/grafana/loki/releases/latest/download/loki-linux-amd64.zip
 * unzip -o loki-linux-amd64.zip
 * sudo mv loki-linux-amd64 /usr/local/bin/loki
 * sudo chmod +x /usr/local/bin/loki
 
-# Downloads the Loki binary:
+### Downloads the Loki binary:
 
 * Makes it executable and moves it to /usr/local/bin so it can run anywhere.
 
@@ -15,7 +15,7 @@
     * sudo useradd --system --no-create-home --shell /bin/false loki || true
     * sudo chown -R loki:loki /var/lib/loki
 
-# Creates directories:
+### Creates directories:
 
 * /etc/loki → config file
 
@@ -25,7 +25,7 @@
 
 * /var/lib/loki/wal → write-ahead logs for durability
 
-# Creates a system user loki to run Loki securely.
+### Creates a system user loki to run Loki securely.
 ```bash
 Loki Configuration (/etc/loki-config.yaml)
 auth_enabled: false
@@ -64,7 +64,7 @@ limits_config:
   reject_old_samples: true
   reject_old_samples_max_age: 168h
 ```
-# Explanation of key sections:
+### Explanation of key sections:
 
 * auth_enabled: false
 
@@ -77,7 +77,7 @@ limits_config:
 
 * ingester
 
-    *Handles incoming logs — keeps them in memory for a while and then saves them to disk.
+    * Handles incoming logs — keeps them in memory for a while and then saves them to disk.
 
 * chunk_idle_period: 5m 
 
@@ -128,7 +128,7 @@ limits_config:
 
     * Reject old logs > 7 days (168h).
 
-# Disable structured metadata.
+### Disable structured metadata:
 ```bash
 Systemd Service for Loki
 [Unit]
@@ -152,8 +152,8 @@ WantedBy=multi-user.target
 
 * Runs as the loki user for security
 
-### Installing Promtail ###
-# Installation Steps
+# Installing Promtail
+### Installation Steps
 * wget https://github.com/grafana/loki/releases/latest/download/promtail-linux-amd64.zip
 * unzip -o promtail-linux-amd64.zip
 * sudo mv promtail-linux-amd64 /usr/local/bin/promtail
@@ -162,7 +162,7 @@ WantedBy=multi-user.target
 
 * Downloads Promtail binary, makes it executable, and moves it to /usr/local/bin.
 
-# Creates /etc/promtail for config files.
+### Creates /etc/promtail for config files.
 
 * Promtail Configuration (/etc/promtail/config.yaml)
 ```bash
@@ -250,14 +250,19 @@ WantedBy=multi-user.target
 
 * Grafana queries Loki → fetches logs from chunks using index
 
-# Update Promtail Configuration (/etc/promtail/config.yaml)
+### Update Promtail Configuration (/etc/promtail/config.yaml)
 
 * Find this section in your config:
-![alt text](image.png)
+```bash
+clients:
+  - url: http://localhost:3100/loki/api/v1/push
+```
 * ➡️ Replace localhost with the private IP or public IP of your Loki + Grafana EC2 instance.
 * For example:
-![alt text](image-1.png)
-
+```bash
+clients:
+  - url: http://172.31.17.229:3100/loki/api/v1/push
+```
 # Port Number
 1. Grafana Port Number is --> 3000
 2. Promtail Port Number is --> 9080
