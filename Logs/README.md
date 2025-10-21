@@ -26,8 +26,43 @@
 * /var/lib/loki/wal → write-ahead logs for durability
 
 # Creates a system user loki to run Loki securely.
+```bash
+Loki Configuration (/etc/loki-config.yaml)
+auth_enabled: false
 
-![alt text](image-2.png) ![alt text](image-3.png)
+server:
+  http_listen_port: 3100
+
+ingester:
+  lifecycler:
+    address: 127.0.0.1
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  chunk_idle_period: 5m
+  max_chunk_age: 1h
+
+schema_config:
+  configs:
+    - from: 2025-09-23
+      store: boltdb
+      object_store: filesystem
+      schema: v11
+      index:
+        prefix: index_
+        period: 24h
+
+storage_config:
+  boltdb:
+    directory: /var/lib/loki/index
+  filesystem:
+    directory: /var/lib/loki/chunks
+
+limits_config:
+  allow_structured_metadata: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
 
 # Explanation of key sections:
 
@@ -95,7 +130,20 @@
 
 # Disable structured metadata.
 
-![alt text](image-4.png)
+Systemd Service for Loki
+[Unit]
+Description=Loki Log Aggregation System
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/loki --config.file=/etc/loki-config.yaml
+Restart=always
+User=loki
+Group=loki
+WorkingDirectory=/var/lib/loki
+
+[Install]
+WantedBy=multi-user.target
 
 
 * Runs Loki as a service (systemctl start loki)
@@ -118,7 +166,25 @@
 
 * Promtail Configuration (/etc/promtail/config.yaml)
 
-![alt text](image-5.png)
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://localhost:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: python-app
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: python-app
+          host: ${HOSTNAME}
+          __path__: /var/log/python-app/*.log
 
 ### Explanation of key sections
 
@@ -144,12 +210,25 @@
 
 ### Example:
 
-![alt text](image-6.png)
+__path__: /var/log/python-app/*.log
+job: python-app
+host: ${HOSTNAME}
 
 
 * Promtail reads all .log files in /var/log/python-app/, adds labels, and sends them to Loki
 
-![alt text](image-7.png)
+Systemd Service for Promtail
+[Unit]
+Description=Promtail service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/promtail --config.file=/etc/promtail/config.yaml
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
 
 
 * Promtail runs as root (needed to read system logs)
